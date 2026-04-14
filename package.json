@@ -4,7 +4,7 @@
   "description": "Interactive Solana bootcamp: 12 guided TypeScript lessons teaching @solana/kit, tokens, PDAs, CPIs, priority fees, Token-2022, Actions/Blinks and x402 micropayments.",
   "type": "module",
   "bin": {
-    "solana-lessons": "./dist/cli/index.js"
+    "solana-lessons": "dist/cli/index.js"
   },
   "files": [
     "dist",
@@ -38,6 +38,9 @@
     "education"
   ],
   "scripts": {
+    "10": "tsx src/10-token-extensions.ts",
+    "11": "tsx src/11-solana-actions.ts",
+    "12": "tsx src/12-x402-micropayments.ts",
     "build": "tsc -p tsconfig.cli.json",
     "postbuild": "chmod +x dist/cli/index.js",
     "prepublishOnly": "npm run build",
@@ -51,9 +54,6 @@
     "07": "tsx src/07-pdas-explained.ts",
     "08": "tsx src/08-cpis-in-action.ts",
     "09": "tsx src/09-priority-fees.ts",
-    "10": "tsx src/10-token-extensions.ts",
-    "11": "tsx src/11-solana-actions.ts",
-    "12": "tsx src/12-x402-micropayments.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },

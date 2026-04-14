@@ -1,3 +1,6 @@
+[![npm version](https://img.shields.io/npm/v/@stbr/solana-lessons)](https://www.npmjs.com/package/@stbr/solana-lessons)
+[![license](https://img.shields.io/npm/l/@stbr/solana-lessons)](LICENSE)
+
 # Scripts de Bootcamp Solana
 
 12 scripts TypeScript autocontidos que ensinam desenvolvimento Solana para desenvolvedores web2. Cada script é uma lição executável que demonstra um conceito fundamental, exibe saída colorida no terminal e leva de 2 a 5 minutos para acompanhar.
