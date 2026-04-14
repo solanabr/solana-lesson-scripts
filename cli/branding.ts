@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import gradientString from "gradient-string";
+import { t } from "./i18n/index.js";
 
 // Pre-baked figlet "Standard" font for "SUPERTEAM BR"
 // Kept as a constant so we don't ship figlet as a runtime dep.
@@ -22,13 +23,11 @@ export function isInteractive(): boolean {
 
 export function renderSplash(): string {
   if (!isInteractive()) {
-    return "solana-lessons — Superteam Brazil Solana Bootcamp";
+    return t("splash.plain");
   }
 
   const logo = brazilGradient.multiline(LOGO);
-  const tagline = chalk.dim.italic(
-    "  Solana Bootcamp · 12 lessons · powered by @SuperteamBR",
-  );
+  const tagline = chalk.dim.italic(t("splash.tagline"));
   return `${logo}\n${tagline}\n`;
 }
 

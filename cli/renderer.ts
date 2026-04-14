@@ -3,9 +3,10 @@ import boxen from "boxen";
 import { highlight } from "cli-highlight";
 import { marked } from "marked";
 import { markedTerminal } from "marked-terminal";
-import type { LessonMeta } from "./lesson-catalog.js";
+import { type LessonMeta, localizedTitle } from "./lesson-catalog.js";
 import type { LessonStep, ParsedLesson } from "./parser.js";
 import { badge, isInteractive } from "./branding.js";
+import { t } from "./i18n/index.js";
 
 marked.use(markedTerminal() as any);
 
@@ -60,21 +61,22 @@ export function stepHeader(
   step: LessonStep,
   total: number,
 ): string {
+  const title = localizedTitle(meta);
   if (!isInteractive()) {
-    return `\n${badge()}  Lesson ${pad2(meta.number)} · ${meta.title}  [Step ${step.n} / ${total}]\n`;
+    return `\n${badge()}  ${t("lesson.label")} ${pad2(meta.number)} · ${title}  [${t("step.label")} ${step.n} / ${total}]\n`;
   }
-  const left = `${badge()}  ${chalk.bold(`Lesson ${pad2(meta.number)}`)} ${chalk.dim("·")} ${chalk.hex(ACCENT)(meta.title)}`;
-  const right = chalk.dim(`[Step ${step.n} / ${total}]`);
+  const left = `${badge()}  ${chalk.bold(`${t("lesson.label")} ${pad2(meta.number)}`)} ${chalk.dim("·")} ${chalk.hex(ACCENT)(title)}`;
+  const right = chalk.dim(`[${t("step.label")} ${step.n} / ${total}]`);
   return `\n${left}    ${right}\n`;
 }
 
 export function statusBar(meta: LessonMeta, rpcUrl: string): string {
-  const text = `lesson ${pad2(meta.number)} · ${meta.slug} · ${rpcUrl}`;
+  const text = `${t("lesson.label").toLowerCase()} ${pad2(meta.number)} · ${meta.slug} · ${rpcUrl}`;
   return isInteractive() ? chalk.dim(text) : text;
 }
 
 export function hotkeyHint(): string {
-  const hint = "↵ next · ← back · q quit · r run";
+  const hint = t("hotkey.full");
   return isInteractive() ? chalk.dim(hint) : hint;
 }
 
@@ -96,15 +98,15 @@ export function renderStepBody(
   parts.push(stepHeader(parsed.meta, step, total));
 
   const title = isInteractive()
-    ? chalk.magenta.bold(`▸ Step ${step.n}: `) + chalk.bold(step.title)
-    : `▸ Step ${step.n}: ${step.title}`;
+    ? chalk.magenta.bold(`▸ ${t("step.label")} ${step.n}: `) + chalk.bold(step.title)
+    : `▸ ${t("step.label")} ${step.n}: ${step.title}`;
   parts.push(title);
 
   const narrative = renderNarrative(step.narrative);
   if (narrative) parts.push("", narrative);
 
   if (step.code.trim()) {
-    const caption = `src/${pad2(parsed.meta.number)}-${parsed.meta.slug}.ts · Step ${step.n}`;
+    const caption = `src/${pad2(parsed.meta.number)}-${parsed.meta.slug}.ts · ${t("step.label")} ${step.n}`;
     parts.push("", codeBox(step.code, caption));
   }
 
@@ -115,9 +117,9 @@ export function renderStepBody(
 export function renderOverview(parsed: ParsedLesson): string {
   const md =
     parsed.overview ||
-    `Lesson ${pad2(parsed.meta.number)}: ${parsed.meta.title}`;
+    `${t("lesson.label")} ${pad2(parsed.meta.number)}: ${localizedTitle(parsed.meta)}`;
   const body = renderMarkdown(md).trim();
-  return sectionBox(body, `Lesson ${pad2(parsed.meta.number)} · Overview`);
+  return sectionBox(body, `${t("lesson.label")} ${pad2(parsed.meta.number)} · ${t("overview.label")}`);
 }
 
 export function clearScreen(): void {

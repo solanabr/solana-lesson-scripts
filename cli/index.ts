@@ -1,20 +1,23 @@
 #!/usr/bin/env node
 import { Command } from "commander";
 import { select } from "@inquirer/prompts";
-import { LESSONS } from "./lesson-catalog.js";
+import { LESSONS, localizedTitle, localizedConcepts } from "./lesson-catalog.js";
 import { runList } from "./commands/list.js";
 import { runShow } from "./commands/show.js";
 import { runTutorial } from "./commands/tutorial.js";
 import { runLesson } from "./commands/run.js";
 import { renderSplash, isInteractive } from "./branding.js";
 import { pad2 } from "./renderer.js";
+import { detectLocale, setLocale, t } from "./i18n/index.js";
+
+setLocale(detectLocale());
 
 const DEFAULT_RPC = process.env.RPC_URL ?? "http://127.0.0.1:8899";
 
 function parseLessonNumber(raw: string): number {
   const n = Number(raw);
   if (!Number.isInteger(n) || n < 1 || n > 12) {
-    throw new Error(`Lesson number must be an integer 1-12 (got "${raw}")`);
+    throw new Error(t("cli.errorLessonRange", { n: raw }));
   }
   return n;
 }
@@ -24,12 +27,12 @@ async function interactiveMenu(): Promise<void> {
     process.stdout.write(renderSplash());
   }
   const answer = await select({
-    message: "Pick a lesson",
+    message: t("cli.pickLesson"),
     pageSize: 14,
     choices: LESSONS.map((l) => ({
-      name: `${pad2(l.number)} · ${l.title.padEnd(34)} ${l.demoTime}`,
+      name: `${pad2(l.number)} · ${localizedTitle(l).padEnd(34)} ${l.demoTime}`,
       value: l.number,
-      description: l.concepts,
+      description: localizedConcepts(l),
     })),
   });
   await runTutorial(answer, DEFAULT_RPC);
@@ -41,7 +44,13 @@ program
   .name("solana-lessons")
   .description("Interactive Solana bootcamp · 12 lessons · Superteam Brazil")
   .version("1.0.0")
-  .option("--rpc <url>", "RPC URL to target when running lessons", DEFAULT_RPC);
+  .option("--rpc <url>", "RPC URL to target when running lessons", DEFAULT_RPC)
+  .option("--lang <locale>", "Language: en, pt-BR");
+
+program.hook("preAction", (thisCommand) => {
+  const lang = thisCommand.opts().lang;
+  if (lang) setLocale(detectLocale(lang));
+});
 
 program
   .command("list")
@@ -99,7 +108,7 @@ program.parseAsync(process.argv).catch((err) => {
     "name" in err &&
     err.name === "ExitPromptError"
   ) {
-    console.log("\n  Goodbye 👋");
+    console.log(t("cli.goodbye"));
     process.exit(0);
   }
   console.error(err);

@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { findLesson } from "../lesson-catalog.js";
+import { t } from "../i18n/index.js";
 
 /**
  * Spawn a lesson script via the bundled `tsx` runtime.
@@ -11,7 +12,7 @@ export function runLesson(n: number, rpcUrl: string): Promise<number> {
   return new Promise((resolve) => {
     const meta = findLesson(n);
     if (!meta) {
-      console.error(`No lesson ${n}.`);
+      console.error(t("run.noLesson", { n }));
       resolve(1);
       return;
     }
@@ -24,9 +25,7 @@ export function runLesson(n: number, rpcUrl: string): Promise<number> {
       const tsxDir = path.dirname(tsxPkgPath);
       tsxBin = path.join(tsxDir, "dist", "cli.mjs");
     } catch (err) {
-      console.error(
-        "Could not locate tsx runtime. Try reinstalling the package.",
-      );
+      console.error(t("run.noTsx"));
       console.error(err);
       resolve(1);
       return;

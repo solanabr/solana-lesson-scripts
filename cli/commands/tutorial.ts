@@ -1,5 +1,5 @@
 import { confirm } from "@inquirer/prompts";
-import { findLesson } from "../lesson-catalog.js";
+import { findLesson, localizedTitle } from "../lesson-catalog.js";
 import { parseLesson } from "../parser.js";
 import {
   clearScreen,
@@ -10,13 +10,12 @@ import {
 import { readKey } from "../pager.js";
 import { isInteractive, renderSplash } from "../branding.js";
 import { runLesson } from "./run.js";
+import { t } from "../i18n/index.js";
 
 export async function runTutorial(n: number, rpcUrl: string): Promise<void> {
   const meta = findLesson(n);
   if (!meta) {
-    console.error(
-      `No lesson ${n}. Run \`solana-lessons list\` to see available lessons.`,
-    );
+    console.error(t("tutorial.noLesson", { n }));
     process.exitCode = 1;
     return;
   }
@@ -43,16 +42,16 @@ export async function runTutorial(n: number, rpcUrl: string): Promise<void> {
     if (page === 0) {
       console.log(renderOverview(parsed));
       console.log(
-        `\n  Lesson ${pad2(meta.number)} · ${meta.slug} · ${parsed.steps.length} step${parsed.steps.length === 1 ? "" : "s"}`,
+        `\n  ${t("lesson.label")} ${pad2(meta.number)} · ${meta.slug} · ${t("tutorial.steps", { count: parsed.steps.length })}`,
       );
-      console.log("  ↵ next · q quit");
+      console.log(`  ${t("hotkey.overview")}`);
     } else {
       console.log(renderStepBody(parsed, page - 1, rpcUrl));
     }
 
     const key = await readKey();
     if (key === "quit") {
-      console.log("\n  Goodbye 👋");
+      console.log(t("cli.goodbye"));
       return;
     }
     if (key === "back") {
@@ -72,11 +71,11 @@ export async function runTutorial(n: number, rpcUrl: string): Promise<void> {
   clearScreen();
   process.stdout.write(renderSplash());
   console.log(
-    `\n  ✔ Lesson ${pad2(meta.number)} · ${meta.title} — walkthrough complete.\n`,
+    `\n  ${t("tutorial.complete", { lesson: pad2(meta.number), title: localizedTitle(meta) })}\n`,
   );
 
   const shouldRun = await confirm({
-    message: `Run the real script now against ${rpcUrl}?`,
+    message: t("tutorial.confirmRun", { rpc: rpcUrl }),
     default: true,
   });
   if (shouldRun) {

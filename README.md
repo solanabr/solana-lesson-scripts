@@ -1,3 +1,5 @@
+[Portugu\u00EAs (BR)](README.pt-BR.md)
+
 # Solana Bootcamp Lesson Scripts
 
 12 self-contained TypeScript scripts that teach Solana development to web2 developers. Each script is a runnable lesson that demonstrates a core concept, prints color-coded output to the terminal, and takes 2-5 minutes to walk through.

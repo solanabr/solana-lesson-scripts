@@ -1,6 +1,7 @@
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { statSync } from "node:fs";
+import { t, type LocaleKey } from "./i18n/index.js";
 
 export type LessonMeta = {
   number: number;
@@ -150,4 +151,12 @@ export const LESSONS: LessonMeta[] = [
 
 export function findLesson(n: number): LessonMeta | undefined {
   return LESSONS.find((l) => l.number === n);
+}
+
+export function localizedTitle(lesson: LessonMeta): string {
+  return t(`lesson.${lesson.number}.title` as LocaleKey);
+}
+
+export function localizedConcepts(lesson: LessonMeta): string {
+  return t(`lesson.${lesson.number}.concepts` as LocaleKey);
 }
